@@ -14,11 +14,6 @@ import { Outlet, Link } from 'react-router-dom';
 const Navigation = () => {
   const { currentUser } = useContext(UserContext);
 
-  // Methods ////////////////////////////////////////////
-  const signOutHandler = async () => {
-    const response = await signOutUser();
-  }
-
 
   return (
     <>
@@ -29,7 +24,7 @@ const Navigation = () => {
             <div className='nav-links-container'>
                 <Link to='/shop' className='nav-link'>SHOP</Link>
                 {currentUser ? (
-                  <span className='nav-link' onClick={signOutHandler} >SIGN OUT</span>
+                  <span className='nav-link' onClick={signOutUser} >SIGN OUT</span>
                 ) : <Link to='/auth' className='nav-link'>SIGN IN</Link>}
             </div>
           
