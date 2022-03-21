@@ -2,7 +2,8 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithRedirect, signInWithPopup, GoogleAuthProvider, 
     createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import {
-    getFirestore, doc, getDoc, setDoc
+    getFirestore, doc, getDoc, setDoc,
+    collection, writeBatch
 } from 'firebase/firestore';
 
 // Your web app's Firebase configuration
@@ -76,4 +77,29 @@ export const signOutUser = async () => await signOut(auth);
 
 export const onAuthStateChangedListener = callback => {
     onAuthStateChanged(auth, callback);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* Uploading data into firestore (Products such as Hats, Sneakers, Jeans, Mens, Women)
+ - In this section, we're using the "collection" and "writeBatch" methods from the firebase/firestore.
+    + This is used to create the collection and then populating the data into the collection in our firestore.
+*/
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// This method is to import the data into our firestore. The arguments we passed into this method is:
+// addCollectionAndDocuments('categories', objectsToAdd); => categories was created as a collection, and each document uses the title of each object.
+export const addCollectionAndDocuments = async (collectionKey, objectsToAdd) => {
+    const collecitonRef = collection(db, collectionKey); // Kind of similar to docRef (this defines the shape of the collection);
+    const batch = writeBatch(db);
+
+    // objectsToAdd is an array of objects.
+    objectsToAdd.forEach((object) => {
+        const docRef = doc(collecitonRef, object.title.toLowerCase()); // Inside the 'categories' collection, create a document. Each document will have
+        // title as the document ID. Inside each document, we store the id, imageUrl, name and price.
+        batch.set(docRef, object);
+    });
+
+    await batch.commit();
+    console.log('Done');
+
 }
